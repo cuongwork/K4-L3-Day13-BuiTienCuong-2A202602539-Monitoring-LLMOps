@@ -1,0 +1,28 @@
+CP3 metric evidence
+Challenge ID: day13-k4-l3a-monitoring-llmops-v1
+Cohort: K4
+Incident: rag_slow
+Affected feature: monitoring
+Challenge latency threshold: 2000 ms
+Challenge log window (UTC): 2026-09-29T09:35:45.672553Z to 2026-09-29T09:36:00.813561Z
+Source: live GET /metrics after the five official challenge requests; /health reported rag_slow=true.
+
+traffic: 5
+latency_p50_ms: 2653
+latency_p95_ms: 4081
+latency_p99_ms: 4081
+ttft_p95_ms: 50
+avg_cost_usd: 0.0021
+total_cost_usd: 0.0103
+tokens_in_total: 175
+tokens_out_total: 650
+error_breakdown: {}
+quality_avg: 0.84
+
+Response latencies from the five challenge correlation IDs (ms):
+req-de1bb63f: 4081
+req-72cfa73e: 2654
+req-61d7337b: 2652
+req-1b4f3546: 2653
+req-61a73459: 2652
+All five responses exceeded the challenge threshold of 2000 ms.

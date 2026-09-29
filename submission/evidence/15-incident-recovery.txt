@@ -1,0 +1,15 @@
+CP3 recovery verification
+Challenge ID: day13-k4-l3a-monitoring-llmops-v1
+Action: disabled the simulated rag_slow incident with scripts/inject_incident.py --disable
+Health check after action: rag_slow=false; tool_fail=false; cost_spike=false
+Workload: scripts/load_test.py --challenge --concurrency 5
+All five requests returned HTTP 200.
+
+Application response latencies from structured logs (UTC, correlation_id, latency_ms):
+2026-09-29T09:53:43.477212Z, req-b49435d1, 153
+2026-09-29T09:53:43.631023Z, req-d889d5dd, 151
+2026-09-29T09:53:43.785006Z, req-9d88942b, 151
+2026-09-29T09:53:43.940376Z, req-db132b66, 152
+2026-09-29T09:53:44.118677Z, req-d3238f81, 175
+
+The five observed application latencies were all below the challenge threshold of 2000 ms. This verifies recovery from the injected scenario; it is not a claim that a production retrieval system was changed.

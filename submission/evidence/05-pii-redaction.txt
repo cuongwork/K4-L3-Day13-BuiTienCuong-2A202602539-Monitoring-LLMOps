@@ -1,0 +1,17 @@
+CP1 PII REDACTION RUNTIME CHECK
+
+Input contained these synthetic values:
+- email: test@example.com
+- phone: 090 123 4567
+- CCCD: 012345678901
+- payment card: 4111-1111-1111-1111
+- passport: A1234567
+
+Search of data/logs.jsonl after the request:
+- raw email present: false
+- raw phone present: false
+- raw CCCD present: false
+- raw payment card present: false
+- raw passport present: false
+
+Validator result: Potential PII leaks detected: 0

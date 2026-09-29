@@ -1,0 +1,3 @@
+> .\.venv\Scripts\python.exe -m pytest -q --basetemp .pytest-tmp
+........................                                                 [100%]
+24 passed in 2.46s

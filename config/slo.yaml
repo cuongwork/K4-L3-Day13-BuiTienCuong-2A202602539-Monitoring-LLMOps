@@ -7,7 +7,13 @@ primary_slo:
     total_event: 'event == "request_received"'
   target_percent: 99.5
   error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình.
+  error_budget_minutes_per_window: 201.6
+  allowed_bad_events_per_10000: 50
+  note: >-
+    Ngưỡng 3000 ms cao hơn rõ rệt so với baseline CP1 khoảng 0.4-1.6 giây,
+    nhưng vẫn phát hiện scenario rag_slow cộng thêm 2.5 giây. Trong cửa sổ 28 ngày
+    có 40,320 phút, budget 0.5% tương đương 201.6 phút hoặc 50 bad events trên
+    mỗi 10,000 requests nếu phân bố traffic đồng đều.
 guardrails:
   error_rate_pct_max: 2
   daily_cost_usd_max: 2.5
