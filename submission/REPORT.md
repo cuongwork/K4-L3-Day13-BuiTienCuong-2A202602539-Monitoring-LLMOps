@@ -8,8 +8,7 @@
 - **MSSV: 2A202602539**
 - **Lớp:** K4-L3A
 - **Repository URL: https://github.com/cuongwork/K4-L3-Day13-BuiTienCuong-2A202602539-Monitoring-LLMOps.git**
-- **Commit SHA cuối:** Chưa chốt; điền SHA sau khi tạo commit cuối cùng.
-- **Commit SHA cuối:** Lấy từ `HEAD` sau khi push; nộp cùng repository URL trên LMS.
+- **Commit SHA cuối:** Sẽ lấy từ `git rev-parse HEAD` sau khi commit và push.
 - **Challenge ID:** `day13-k4-l3a-monitoring-llmops-v1`
 - **Tên project Langfuse cá nhân:** `day13-k4-l3a-2A202602539`
 
@@ -30,19 +29,18 @@
 | Prompt versions | `evidence/09-prompt-versions.png` |
 | Prompt rollback | `evidence/10-prompt-rollback.png` |
 | Dashboard overview image | `evidence/11-dashboard-overview.png` |
-| Incident metric values | `evidence/12-incident-metric.txt` |
-| Incident log | `evidence/13-incident-log.txt` |
-| Incident trace | `evidence/14-incident-trace.txt` |
-| Incident recovery | `evidence/15-incident-recovery.txt` |
+| Incident metric values | `evidence/12-incident-metric.png` |
+| Incident log | `evidence/13-incident-log.png` |
+| Incident trace | `evidence/14-incident-trace.png` |
+| Incident recovery | `evidence/15-incident-recovery.png` |
 
 ## 3. Kết quả kỹ thuật
 
 | Nội dung | Baseline | Kết quả cuối | Nhận xét |
 |---|---|---|---|
-| `validate_logs.py` | 30/100 (21 records; 20 thiếu required fields; 20 thiếu enrichment; 0 correlation IDs) | 100/100 (91 records; 0 thiếu fields/enrichment; 44 correlation IDs; 0 PII leaks) | Baseline CP0 chưa đạt là dự kiến vì TODO của CP1 chưa được triển khai. |
-| `validate_dashboard.py` | Hợp lệ 6/6 panel | Hợp lệ 6/6 panel | Snapshot SVG được sinh từ 23 structured log records gần nhất; CP3 có snapshot riêng theo đúng challenge window. |
-| `validate_dashboard.py` | Hợp lệ 6/6 panel | Hợp lệ 6/6 panel | Contract validator đạt đủ sáu panel; dashboard overview có ảnh PNG riêng. |
-| `pytest` | 22 passed in 2.44s | 24 passed in 2.46s | Chạy bằng Python 3.12 và `--basetemp .pytest-tmp` do thư mục Temp mặc định bị lỗi quyền trên Windows. |
+| `validate_logs.py` | 30/100 (21 records; 20 thiếu required fields; 20 thiếu enrichment; 0 correlation IDs) | 100/100 (102 records; 0 thiếu fields/enrichment; 49 correlation IDs; 0 PII leaks) | Baseline CP0 chưa đạt là dự kiến vì TODO của CP1 chưa được triển khai. |
+| `validate_dashboard.py` | Hợp lệ 6/6 panel | Hợp lệ 6/6 panel | Contract validator đạt đủ sáu panel; dashboard runtime có ảnh snapshot và Langfuse dashboard PNG riêng. |
+| `pytest` | 22 passed in 2.44s | 24 passed in 2.16s | Chạy bằng Python 3.12 và `--basetemp .pytest-tmp` do thư mục Temp mặc định bị lỗi quyền trên Windows. |
 | Số traces hợp lệ | Workload mẫu gồm 10 request; tracing được bật | 54 root traces | Đếm qua Langfuse Observations API v2 trong project cá nhân sau CP3/recovery. |
 | Số PII leak | 0 trong 21 log records | 0 trong 91 log records | Validator hiện tại không phát hiện PII. |
 | Latency P95 / TTFT P95 | Không lưu baseline CP0 | CP3: 4081 / 50 ms | Đúng 5 challenge requests; ngưỡng challenge 2000 ms. |
@@ -85,11 +83,11 @@
 
 - **Challenge ID:** `day13-k4-l3a-monitoring-llmops-v1` (K4, incident `rag_slow`, feature `monitoring`).
 - **Khoảng thời gian điều tra:** `2026-09-29T09:35:45.672553Z`–`2026-09-29T09:36:00.813561Z`, theo request đầu và response cuối trong structured log.
-- **Triệu chứng từ metrics:** Challenge threshold là 2000 ms. Snapshot sau đúng 5 challenge requests ghi P50 2653 ms, P95/P99 4081 ms; cả 5 latency đều vượt ngưỡng, TTFT P95 là 50 ms và error breakdown rỗng. Xem [metric output](evidence/12-incident-metric.txt).
-- **Log line và correlation ID liên quan:** `data/logs.jsonl:71`, `response_sent`, correlation ID `req-de1bb63f`, latency 4081 ms. Xem [incident log evidence](evidence/13-incident-log.txt).
-- **Trace ID và span gây ảnh hưởng:** Trace `335133736374cd29fdf485b35210a968`, cùng correlation ID `req-de1bb63f`. Root `lab-agent-run` mất 4.082 s; child `retrieval` mất 2.501 s; `generation` mất 0.153 s. Có khoảng 1.427 s giữa retrieval kết thúc và generation bắt đầu; `resolve_prompt()` chạy trong đoạn này và trace ghi `prompt_source=langfuse`, nhưng không có span riêng để xác định chính xác phần thời gian đó. Xem [incident trace evidence](evidence/14-incident-trace.txt).
+- **Triệu chứng từ metrics:** Challenge threshold là 2000 ms. Snapshot sau đúng 5 challenge requests ghi P50 2653 ms, P95/P99 4081 ms; cả 5 latency đều vượt ngưỡng, TTFT P95 là 50 ms và error breakdown rỗng. Xem [metric output](evidence/12-incident-metric.png).
+- **Log line và correlation ID liên quan:** `data/logs.jsonl:71`, `response_sent`, correlation ID `req-de1bb63f`, latency 4081 ms. Xem [incident log evidence](evidence/13-incident-log.png).
+- **Trace ID và span gây ảnh hưởng:** Trace `335133736374cd29fdf485b35210a968`, cùng correlation ID `req-de1bb63f`. Root `lab-agent-run` mất 4.082 s; child `retrieval` mất 2.501 s; `generation` mất 0.153 s. Có khoảng 1.427 s giữa retrieval kết thúc và generation bắt đầu; `resolve_prompt()` chạy trong đoạn này và trace ghi `prompt_source=langfuse`, nhưng không có span riêng để xác định chính xác phần thời gian đó. Xem [incident trace evidence](evidence/14-incident-trace.png).
 - **Root cause:** Challenge bật `rag_slow`; [app/mock_rag.py](../app/mock_rag.py) chèn `time.sleep(2.5)` trong retrieval. Độ trễ retrieval 2.501 s khớp với injected delay và tự nó vượt challenge threshold 2000 ms, giải thích việc cả 5 request đều vượt ngưỡng. Phần 1.427 s chưa được phân giải riêng, nên không quy nó cho retrieval.
-- **Fix action:** Sau khi lưu evidence, tắt incident mô phỏng bằng `python scripts/inject_incident.py --disable`; `/health` xác nhận `rag_slow=false`. Chạy lại cùng challenge workload: 5/5 request HTTP 200, application latency 151–175 ms, đều dưới 2000 ms. Đây là recovery của mock challenge, không phải thay đổi production; xem [recovery evidence](evidence/15-incident-recovery.txt).
+- **Fix action:** Sau khi lưu evidence, tắt incident mô phỏng bằng `python scripts/inject_incident.py --disable`; `/health` xác nhận `rag_slow=false`. Chạy lại cùng challenge workload: 5/5 request HTTP 200, application latency 151–175 ms, đều dưới 2000 ms. Đây là recovery của mock challenge, không phải thay đổi production; xem [recovery evidence](evidence/15-incident-recovery.png).
 - **Preventive measure:** Với hệ thống thật, đặt alert cho retrieval-span P95 vượt 2000 ms, thêm timeout/fallback cho retrieval, và kiểm tra regression/load test có fault injection. Đây là khuyến nghị, chưa được triển khai hoặc kiểm chứng trong production.
 
 ## 8. Giải thích và tự đánh giá
@@ -100,9 +98,7 @@
 - **Cách hiểu luồng Metrics → Logs → Traces:** Metrics phát hiện loại triệu chứng và khoảng thời gian; log cung cấp `correlation_id` của request bất thường; trace có cùng ID cho biết span nào tiêu thời gian. Trong trace này còn 1.427 s chưa được tách span nên không gán phần đó cho retrieval.
 - **Vai trò của prompt version, token/cost, SLO hoặc rollback trong vận hành LLM:** Version/label Langfuse giúp biết prompt nào phục vụ request và rollback về version đã biết; token/cost đo mức tiêu thụ; SLO đặt ngưỡng đánh giá latency/error và error budget. Đây là các tín hiệu vận hành, không thay thế việc kiểm tra trace.
 - **Điều quan trọng nhất đã học:** P95 giúp phát hiện tail latency nhưng không tự chỉ ra nguyên nhân. Cần nối cùng request qua metric, log và trace; nếu waterfall còn khoảng không instrument thì ghi nhận đó là chưa rõ, không đoán.
-- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** Dashboard SVG là snapshot tĩnh, không tự refresh. Prompt resolution chưa có span riêng nên chưa phân giải được khoảng 1.427 s. Challenge là mock injection; chưa triển khai hoặc kiểm chứng production fix. Cần chốt commit SHA và xác nhận ảnh dashboard/Langfuse hiện có trước khi nộp.
-- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** CP3 metric evidence là output text; chưa có ảnh dashboard runtime riêng cho CP3. Prompt resolution chưa có span riêng nên chưa phân giải được khoảng 1.427 s. Challenge là mock injection; chưa triển khai hoặc kiểm chứng production fix. Cần rà nội dung hiển thị của ảnh Langfuse trước khi nộp.
-- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** CP3 metric evidence hiện là output text, chưa có screenshot dashboard runtime riêng. Prompt resolution chưa có span riêng nên chưa phân giải được khoảng 1.427 s. Challenge là mock injection; chưa triển khai hoặc kiểm chứng production fix. Cần rà ảnh evidence trước khi nộp.
+- **Hạn chế hoặc phần chưa hoàn thành, nếu có:** Dashboard SVG là snapshot tĩnh, không tự refresh. Prompt resolution chưa có span riêng nên chưa phân giải được khoảng 1.427 s giữa retrieval và generation. Challenge là mock injection môi trường dev; chưa triển khai hoặc kiểm chứng production fix trên RAG service phân tán. Cần chốt commit SHA sau khi push lên remote repository.
 
 ## 9. Checklist trước khi nộp
 
